@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth bg-[#030508]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI TaskOrbit | Stop Losing Customers to Missed Calls</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- GSAP for Smooth Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { dark: '#030508', cyan: '#00f0ff', purple: '#7b2cbf', blue: '#3b82f6' }
+                    },
+                    fontFamily: { sans:['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { background-color: #030508; color: #e2e8f0; overflow-x: hidden; }
+        ::selection { background-color: #00f0ff; color: #000; }
+        
+        /* Premium Glassmorphism */
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
+        .text-gradient { background: linear-gradient(135deg, #00f0ff, #3b82f6, #7b2cbf); -webkit-background-clip: text; color: transparent; }
+        
+        /* Ambient Glow Blobs */
+        .glow-blob { position: fixed; border-radius: 50%; filter: blur(140px); z-index: -1; opacity: 0.15; animation: pulseGlow 8s infinite alternate; pointer-events: none; }
+        @keyframes pulseGlow { 0% { transform: scale(1); opacity: 0.1; } 100% { transform: scale(1.3); opacity: 0.25; } }
+
+        /* 3D Robot Orbit Animation */
+        .orbit-container { perspective: 1200px; transform-style: preserve-3d; }
+        .orbiting-robot { animation: orbit3D 15s linear infinite; transform-style: preserve-3d; }
+        @keyframes orbit3D {
+            0% { transform: rotateY(0deg) translateZ(30px) translateY(0px); }
+            50% { transform: rotateY(18deg) translateZ(30px) translateY(-20px); }
+            100% { transform: rotateY(0deg) translateZ(30px) translateY(0px); }
+        }
+
+        /* 3D Tilt Feature Cards */
+        .tilt-card { transition: transform 0.1s ease, box-shadow 0.3s ease; transform-style: preserve-3d; }
+        .tilt-card:hover { box-shadow: 0 20px 40px rgba(0, 240, 255, 0.15); border-color: rgba(0, 240, 255, 0.4); }
+        .tilt-content { transform: translateZ(40px); }
+
+        /* Semicircle Curved Layout */
+        .curved-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: dashPath 6s linear infinite; }
+        @keyframes dashPath { to { stroke-dashoffset: 0; } }
+
+        /* Audio Waveform */
+        .wave-bar { width: 4px; background: #00f0ff; border-radius: 2px; transition: height 0.2s ease; display: inline-block; margin: 0 2px; height: 6px; }
+        .playing .wave-bar { animation: soundWave 0.6s ease-in-out infinite alternate; }
+        .playing .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .playing .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .playing .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .playing .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+        @keyframes soundWave { 0% { height: 6px; } 100% { height: 28px; } }
+
+        /* Horizontal Flow Arrows */
+        .flow-arrow { animation: slideRight 2s infinite; opacity: 0.5; }
+        @keyframes slideRight { 0% { transform: translateX(0); opacity: 0.2; } 50% { opacity: 1; } 100% { transform: translateX(10px); opacity: 0.2; } }
+    </style>
+</head>
+<body class="antialiased relative">
+
+    <!-- Ambient Background -->
+    <div class="glow-blob bg-brand-cyan w-[50vw] h-[50vw] top-[-10%] left-[-10%]"></div>
+    <div class="glow-blob bg-brand-purple w-[40vw] h-[40vw] bottom-[10%] right-[-10%]" style="animation-delay: -4s;"></div>
+
+    <!-- NAVBAR -->
+    <nav class="fixed w-full top-0 z-50 bg-[#030508]/80 backdrop-blur-xl border-b border-white/5 py-4 px-6 transition-all">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#" class="flex items-center gap-3 group">
+                <img src="https://i.ibb.co/8nD2ZTZm/Gemini-Generated-Image-4d2na04d2na04d2n-removebg-preview.png" class="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(0,240,255,0.6)] group-hover:scale-110 transition-transform" alt="Logo">
+                <span class="text-xl font-bold text-white tracking-wide">Task<span class="text-brand-cyan">Orbit</span></span>
+            </a>
+            <div class="hidden lg:flex gap-8 items-center text-sm font-medium text-slate-300">
+                <a href="#how" class="hover:text-white transition">How it Works</a>
+                <a href="#industries" class="hover:text-white transition">Industries</a>
+                <a href="#features" class="hover:text-white transition">Features</a>
+                <a href="#demo" class="hover:text-white transition">Live Demo</a>
+            </div>
+            <div class="hidden md:flex gap-4 items-center">
+                <a href="tel:+919654524339" class="text-sm font-medium text-white flex items-center gap-2"><i class="ph-fill ph-phone text-brand-cyan"></i> +91 96545 24339</a>
+                <a href="#contact" class="text-sm font-bold bg-white text-black px-6 py-2.5 rounded-full hover:bg-brand-cyan transition-colors shadow-[0_0_20px_rgba(0,240,255,0.3)]">Get Free Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 1. PREMIUM HERO SECTION -->
+    <section class="min-h-[100vh] flex items-center pt-32 pb-20 px-6 perspective-container relative z-10">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center w-full">
+            <div class="gs-reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 font-semibold text-xs uppercase tracking-widest mb-6">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Stop Leaking Revenue
+                </div>
+                <h1 class="text-5xl lg:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tight">
+                    Stop Losing Customers to <span class="text-gradient">Missed Calls</span>
+                </h1>
+                <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-xl leading-relaxed">
+                    AI TaskOrbit answers, qualifies, and converts every incoming call 24/7 — so you never lose revenue to your competitors again.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#contact" class="px-8 py-4 rounded-full bg-brand-cyan text-black font-bold text-center hover:bg-white transition-colors shadow-[0_0_30px_rgba(0,240,255,0.4)] text-lg">Get Free Demo</a>
+                    <a href="#demo" class="px-8 py-4 rounded-full border border-white/20 text-white font-bold text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-lg"><i class="ph-fill ph-play-circle text-brand-cyan"></i> Try Live AI Call</a>
+                </div>
+            </div>
+
+            <!-- 3D Floating AI Visual -->
+            <div class="relative h-[500px] w-full flex items-center justify-center orbit-container gs-reveal">
+                <div class="absolute w-[350px] h-[350px] bg-brand-purple/20 rounded-full blur-[100px] animate-pulse"></div>
+                <img src="https://i.ibb.co/8nD2ZTZm/Gemini-Generated-Image-4d2na04d2na04d2n-removebg-preview.png" class="orbiting-robot w-80 lg:w-[450px] drop-shadow-[0_0_50px_rgba(0,240,255,0.5)]" alt="AI TaskOrbit Robot">
+                
+                <!-- Floating Elements -->
+                <div class="absolute top-10 right-0 glass px-6 py-4 rounded-2xl border-t-2 border-green-400 shadow-xl z-20 flex items-center gap-3 animate-bounce" style="animation-duration: 3s;">
+                    <div class="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center"><i class="ph-fill ph-check-circle text-xl"></i></div>
+                    <div><p class="text-[10px] uppercase tracking-widest text-slate-400">Call Answered</p><p class="text-white font-bold">Instantly</p></div>
+                </div>
+                <div class="absolute bottom-10 left-0 glass px-6 py-4 rounded-2xl border-t-2 border-brand-cyan shadow-xl z-20 flex items-center gap-3 animate-bounce" style="animation-duration: 4s;">
+                    <div class="w-10 h-10 rounded-full bg-brand-cyan/20 text-brand-cyan flex items-center justify-center"><i class="ph-fill ph-currency-inr text-xl"></i></div>
+                    <div><p class="text-[10px] uppercase tracking-widest text-slate-400">Revenue Saved</p><p class="text-white font-bold">+₹45,000</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. TRUST & STATS -->
+    <section class="py-12 border-y border-white/5 bg-black/40 relative z-10 gs-reveal">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/10">
+            <div><h3 class="text-4xl font-black text-white mb-1">1M+</h3><p class="text-xs text-slate-400 uppercase tracking-widest">Calls Handled</p></div>
+            <div><h3 class="text-4xl font-black text-brand-cyan mb-1">₹50Cr+</h3><p class="text-xs text-slate-400 uppercase tracking-widest">Revenue Saved</p></div>
+            <div><h3 class="text-4xl font-black text-white mb-1">24/7</h3><p class="text-xs text-slate-400 uppercase tracking-widest">Active Uptime</p></div>
+            <div><h3 class="text-4xl font-black text-brand-cyan mb-1">500+</h3><p class="text-xs text-slate-400 uppercase tracking-widest">Businesses Scaled</p></div>
+        </div>
+    </section>
+
+    <!-- 3. HOW IT WORKS (Horizontal Infographic Flow) -->
+    <section id="how" class="py-24 px-6 relative z-10 max-w-7xl mx-auto gs-reveal">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">How AI TaskOrbit Works</h2>
+            <p class="text-slate-400 text-lg">A seamless, autonomous flow from an incoming call to booked revenue.</p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-2">
+            <!-- Step 1 -->
+            <div class="glass p-6 rounded-2xl w-full lg:w-1/5 text-center relative hover:border-brand-cyan transition-colors">
+                <div class="w-12 h-12 mx-auto rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mb-4"><i class="ph-fill ph-phone-incoming text-2xl"></i></div>
+                <h4 class="font-bold text-white mb-2">Capture Calls</h4>
+                <p class="text-xs text-slate-400">Instantly answers on the first ring, 24/7.</p>
+            </div>
+            <i class="ph-bold ph-arrow-right text-brand-cyan text-3xl flow-arrow rotate-90 lg:rotate-0"></i>
+            
+            <!-- Step 2 -->
+            <div class="glass p-6 rounded-2xl w-full lg:w-1/5 text-center relative hover:border-brand-cyan transition-colors">
+                <div class="w-12 h-12 mx-auto rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center mb-4"><i class="ph-fill ph-brain text-2xl"></i></div>
+                <h4 class="font-bold text-white mb-2">Understand Intent</h4>
+                <p class="text-xs text-slate-400">AI analyzes context, language, and customer need.</p>
+            </div>
+            <i class="ph-bold ph-arrow-right text-brand-cyan text-3xl flow-arrow rotate-90 lg:rotate-0"></i>
+
+            <!-- Step 3 -->
+            <div class="glass p-6 rounded-2xl w-full lg:w-1/5 text-center relative border-b-4 border-brand-cyan shadow-[0_0_30px_rgba(0,240,255,0.15)] transform scale-105">
+                <div class="w-12 h-12 mx-auto rounded-full bg-brand-cyan/20 text-brand-cyan flex items-center justify-center mb-4"><i class="ph-fill ph-chats text-2xl"></i></div>
+                <h4 class="font-bold text-white mb-2">AI Conversation</h4>
+                <p class="text-xs text-slate-400">Human-like dialogue resolves queries & handles objections.</p>
+            </div>
+            <i class="ph-bold ph-arrow-right text-brand-cyan text-3xl flow-arrow rotate-90 lg:rotate-0"></i>
+
+            <!-- Step 4 -->
+            <div class="glass p-6 rounded-2xl w-full lg:w-1/5 text-center relative hover:border-brand-cyan transition-colors">
+                <div class="w-12 h-12 mx-auto rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mb-4"><i class="ph-fill ph-database text-2xl"></i></div>
+                <h4 class="font-bold text-white mb-2">Save Lead Data</h4>
+                <p class="text-xs text-slate-400">Extracts info & books appointments into your CRM.</p>
+            </div>
+            <i class="ph-bold ph-arrow-right text-brand-cyan text-3xl flow-arrow rotate-90 lg:rotate-0"></i>
+
+            <!-- Step 5 -->
+            <div class="glass p-6 rounded-2xl w-full lg:w-1/5 text-center relative hover:border-brand-cyan transition-colors">
+                <div class="w-12 h-12 mx-auto rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center mb-4"><i class="ph-fill ph-whatsapp-logo text-2xl"></i></div>
+                <h4 class="font-bold text-white mb-2">Instant Follow-up</h4>
+                <p class="text-xs text-slate-400">Sends confirmation texts via WhatsApp automatically.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. FEATURES (3D Glow Cards) -->
+    <section id="features" class="py-24 px-6 bg-black/30 border-y border-white/5 relative z-10 gs-reveal">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Unmatched <span class="text-gradient">Capabilities</span></h2>
+                <p class="text-slate-400 text-lg">Everything you need to automate your inbound revenue engine.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 perspective-container">
+                <!-- Card 1 -->
+                <div class="tilt-card glass p-8 rounded-3xl relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-500/20 blur-[50px] rounded-full group-hover:bg-brand-cyan/40 transition-colors"></div>
+                    <div class="tilt-content">
+                        <i class="ph-fill ph-clock-counter-clockwise text-5xl text-brand-cyan mb-6"></i>
+                        <h3 class="text-2xl font-bold text-white mb-3">24/7 Call Answering</h3>
+                        <p class="text-slate-400 text-sm">Operates continuously without breaks, leaves, or downtime. Every call is answered.</p>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="tilt-card glass p-8 rounded-3xl relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-purple-500/20 blur-[50px] rounded-full group-hover:bg-purple-500/40 transition-colors"></div>
+                    <div class="tilt-content">
+                        <i class="ph-fill ph-waveform text-5xl text-purple-400 mb-6"></i>
+                        <h3 class="text-2xl font-bold text-white mb-3">Human-like AI Voice</h3>
+                        <p class="text-slate-400 text-sm">Empathetic tones, natural pauses, and accent adaptations make it indistinguishable from humans.</p>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div class="tilt-card glass p-8 rounded-3xl relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-green-500/20 blur-[50px] rounded-full group-hover:bg-green-500/40 transition-colors"></div>
+                    <div class="tilt-content">
+                        <i class="ph-fill ph-funnel text-5xl text-green-400 mb-6"></i>
+                        <h3 class="text-2xl font-bold text-white mb-3">Lead Qualification</h3>
+                        <p class="text-slate-400 text-sm">Smartly filters junk calls and qualifies hot leads based on your specific business rules.</p>
+                    </div>
+                </div>
+                <!-- Card 4 -->
+                <div class="tilt-card glass p-8 rounded-3xl relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-pink-500/20 blur-[50px] rounded-full group-hover:bg-pink-500/40 transition-colors"></div>
+                    <div class="tilt-content">
+                        <i class="ph-fill ph-plugs-connected text-5xl text-pink-400 mb-6"></i>
+                        <h3 class="text-2xl font-bold text-white mb-3">CRM Integration</h3>
+                        <p class="text-slate-400 text-sm">Pushes transcripts, summaries, and booked appointments directly into Salesforce, HubSpot, etc.</p>
+                    </div>
+                </div>
+                <!-- Card 5 -->
+                <div class="tilt-card glass p-8 rounded-3xl relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-[#25D366]/20 blur-[50px] rounded-full group-hover:bg-[#25D366]/40 transition-colors"></div>
+                    <div class="tilt-content">
+                        <i class="ph-fill ph-whatsapp-logo text-5xl text-[#25D366] mb-6"></i>
+                        <h3 class="text-2xl font-bold text-white mb-3">WhatsApp Follow-up</h3>
+                        <p class="text-slate-400 text-sm">Sends instant links, brochures, and meeting confirmations right after the call ends.</p>
+                    </div>
+                </div>
+                <!-- Card 6 -->
+                <div class="tilt-card glass p-8 rounded-3xl relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-orange-500/20 blur-[50px] rounded-full group-hover:bg-orange-500/40 transition-colors"></div>
+                    <div class="tilt-content">
+                        <i class="ph-fill ph-translate text-5xl text-orange-400 mb-6"></i>
+                        <h3 class="text-2xl font-bold text-white mb-3">Multi-language</h3>
+                        <p class="text-slate-400 text-sm">Understands and speaks English, Hindi, Tamil, Telugu, and 40+ other languages seamlessly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. INDUSTRIES (Curved Infographic Layout) -->
+    <section id="industries" class="py-32 px-6 relative z-10 w-full overflow-hidden gs-reveal bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] bg-cover">
+        <div class="max-w-7xl mx-auto text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Every Missed Call is Lost Revenue — <span class="text-brand-cyan">We Fix That</span></h2>
+            <p class="text-slate-400 text-lg">Custom AI models trained specifically for your vertical's workflows.</p>
+        </div>
+
+        <div class="relative w-full h-[1000px] lg:h-[700px] flex items-center justify-center max-w-6xl mx-auto perspective-container mt-10">
+            <!-- Connecting Curved SVG Lines -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none z-0 hidden lg:block" preserveAspectRatio="none">
+                <path d="M 10% 80% Q 50% 10% 90% 80%" stroke="rgba(0,240,255,0.3)" stroke-width="2" fill="none" stroke-dasharray="10,10" class="curved-path"/>
+            </svg>
+
+            <!-- Center Core -->
+            <div class="relative z-20 w-[280px] glass rounded-full p-8 border-4 border-brand-cyan/50 shadow-[0_0_60px_rgba(0,240,255,0.3)] bg-[#050b14] flex flex-col items-center justify-center transform hover:scale-105 transition-transform duration-500 hidden lg:flex aspect-square">
+                <img src="https://i.ibb.co/8nD2ZTZm/Gemini-Generated-Image-4d2na04d2na04d2n-removebg-preview.png" class="w-32 drop-shadow-[0_0_20px_rgba(0,240,255,0.8)] mb-2" alt="AI Agent">
+                <h3 class="text-white font-bold text-center text-lg">TaskOrbit Core</h3>
+            </div>
+
+            <!-- Outer Industry Cards (Arranged in Arch on Desktop, Stacked on Mobile) -->
+            <div class="absolute lg:top-[60%] lg:left-[5%] top-[0%] w-full lg:w-64 glass p-6 rounded-3xl border-t-4 border-orange-500 z-20 hover:-translate-y-4 transition-transform shadow-2xl">
+                <div class="w-14 h-14 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center mb-4"><i class="ph-fill ph-buildings text-2xl"></i></div>
+                <h4 class="font-bold text-white text-lg mb-2">Real Estate</h4>
+                <p class="text-sm text-slate-400">Capture hot property leads and schedule site visits before competitors respond.</p>
+            </div>
+
+            <div class="absolute lg:top-[25%] lg:left-[20%] top-[20%] w-full lg:w-64 glass p-6 rounded-3xl border-t-4 border-pink-500 z-20 hover:-translate-y-4 transition-transform shadow-2xl">
+                <div class="w-14 h-14 bg-pink-500/20 text-pink-400 rounded-full flex items-center justify-center mb-4"><i class="ph-fill ph-stethoscope text-2xl"></i></div>
+                <h4 class="font-bold text-white text-lg mb-2">Clinics & Hospitals</h4>
+                <p class="text-sm text-slate-400">Auto-book appointments and handle rescheduling without receptionist overload.</p>
+            </div>
+
+            <div class="absolute lg:top-[5%] lg:left-[50%] lg:-translate-x-1/2 top-[40%] w-full lg:w-64 glass p-6 rounded-3xl border-t-4 border-green-500 z-20 hover:-translate-y-4 transition-transform shadow-2xl">
+                <div class="w-14 h-14 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mb-4"><i class="ph-fill ph-shopping-cart text-2xl"></i></div>
+                <h4 class="font-bold text-white text-lg mb-2">E-commerce</h4>
+                <p class="text-sm text-slate-400">Handle order tracking, refunds, and delivery queries instantly 24/7.</p>
+            </div>
+
+            <div class="absolute lg:top-[25%] lg:right-[20%] top-[60%] w-full lg:w-64 glass p-6 rounded-3xl border-t-4 border-blue-500 z-20 hover:-translate-y-4 transition-transform shadow-2xl">
+                <div class="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mb-4"><i class="ph-fill ph-bank text-2xl"></i></div>
+                <h4 class="font-bold text-white text-lg mb-2">Finance</h4>
+                <p class="text-sm text-slate-400">Qualify serious loan and investment clients with highly secure, smart scripts.</p>
+            </div>
+
+            <div class="absolute lg:top-[60%] lg:right-[5%] top-[80%] w-full lg:w-64 glass p-6 rounded-3xl border-t-4 border-purple-500 z-20 hover:-translate-y-4 transition-transform shadow-2xl">
+                <div class="w-14 h-14 bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center mb-4"><i class="ph-fill ph-student text-2xl"></i></div>
+                <h4 class="font-bold text-white text-lg mb-2">Coaching</h4>
+                <p class="text-sm text-slate-400">Automate admission inquiries, fee details, and batch timings at scale.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. DEMO SECTION (Listen to AI Call) -->
+    <section id="demo" class="py-24 px-6 relative z-10 max-w-5xl mx-auto gs-reveal">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Listen to <span class="text-gradient">AI Call Demo</span></h2>
+            <p class="text-slate-400 text-lg">Hear how natural, intelligent, and conversion-focused our agents are.</p>
+        </div>
+
+        <div class="glass p-8 md:p-12 rounded-3xl border border-brand-cyan/20 shadow-[0_0_50px_rgba(0,240,255,0.05)]">
+            <!-- Audio Player UI -->
+            <div class="flex flex-col md:flex-row items-center gap-8 mb-12 border-b border-white/10 pb-8">
+                <button onclick="toggleDemoAudio(this)" class="w-20 h-20 rounded-full bg-brand-cyan text-black flex items-center justify-center hover:bg-white transition-colors shadow-[0_0_20px_rgba(0,240,255,0.5)] flex-shrink-0">
+                    <i class="ph-fill ph-play text-4xl demo-play-icon"></i>
+                </button>
+                <div class="w-full">
+                    <h3 class="text-2xl font-bold text-white mb-2">Real Estate Lead Qualification</h3>
+                    <p class="text-slate-400 text-sm mb-4">Customer calls at 11:30 PM inquiring about a 3BHK villa.</p>
+                    <div class="demo-wave-container flex items-end h-10 gap-1 opacity-60">
+                        <!-- Bars generated to simulate wave -->
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+                    <!-- Put your real MP3 link here -->
+                    <audio id="main-demo-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+                </div>
+            </div>
+
+            <!-- Fake Conversation Simulation UI -->
+            <div class="space-y-6 max-w-2xl mx-auto bg-[#0a0f1c] p-6 rounded-2xl border border-white/5">
+                <div class="text-center text-xs font-bold text-slate-500 tracking-widest mb-4">LIVE TRANSCRIPT</div>
+                
+                <div class="flex gap-4">
+                    <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white text-xs flex-shrink-0"><i class="ph-fill ph-user"></i></div>
+                    <div class="bg-white/10 p-4 rounded-2xl rounded-tl-none text-sm text-slate-200">Hi, I saw an ad for the Lakeside Villas. Are they still available?</div>
+                </div>
+                
+                <div class="flex gap-4 flex-row-reverse">
+                    <div class="w-8 h-8 rounded-full bg-brand-cyan/20 text-brand-cyan flex items-center justify-center flex-shrink-0 border border-brand-cyan/50"><img src="https://i.ibb.co/8nD2ZTZm/Gemini-Generated-Image-4d2na04d2na04d2n-removebg-preview.png" class="w-5 h-5"></div>
+                    <div class="bg-brand-cyan/10 border border-brand-cyan/20 p-4 rounded-2xl rounded-tr-none text-sm text-brand-cyan">Yes, they are! We have a few premium 3BHK units left. Are you looking to move in immediately or for an investment?</div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white text-xs flex-shrink-0"><i class="ph-fill ph-user"></i></div>
+                    <div class="bg-white/10 p-4 rounded-2xl rounded-tl-none text-sm text-slate-200">Looking to move in. Can I visit the site tomorrow?</div>
+                </div>
+
+                <div class="flex gap-4 flex-row-reverse">
+                    <div class="w-8 h-8 rounded-full bg-brand-cyan/20 text-brand-cyan flex items-center justify-center flex-shrink-0 border border-brand-cyan/50"><img src="https://i.ibb.co/8nD2ZTZm/Gemini-Generated-Image-4d2na04d2na04d2n-removebg-preview.png" class="w-5 h-5"></div>
+                    <div class="bg-brand-cyan/10 border border-brand-cyan/20 p-4 rounded-2xl rounded-tr-none text-sm text-brand-cyan">Absolutely. I have booked a slot for you tomorrow at 11 AM. I just sent the Google Maps location to this WhatsApp number. See you there!</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. LEAD CAPTURE SYSTEM (Contact / WA Redirect) -->
+    <section id="contact" class="py-24 px-6 relative z-10 gs-reveal border-t border-white/5 bg-gradient-to-t from-[#050b14] to-black">
+        <div class="max-w-5xl mx-auto glass rounded-3xl p-8 md:p-16 relative overflow-hidden border border-brand-cyan/30 shadow-[0_0_60px_rgba(0,240,255,0.1)]">
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-brand-cyan/20 blur-[100px] rounded-full pointer-events-none"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center relative z-10">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-400 font-bold text-[10px] uppercase tracking-widest mb-4 border border-red-500/20">High Urgency</div>
+                    <h2 class="text-4xl font-black text-white mb-4 leading-tight">Your Competitors Are Already Using AI.</h2>
+                    <p class="text-brand-cyan font-semibold text-lg mb-6">Are You Losing Customers To Them?</p>
+                    <p class="text-slate-400 mb-8">Deploy your AI employee today. Fill out this form and our team will instantly connect with you via WhatsApp with a custom strategy.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-white"><i class="ph-fill ph-envelope text-brand-cyan text-2xl"></i> taskorbitt@gmail.com</div>
+                        <div class="flex items-center gap-3 text-white"><i class="ph-fill ph-phone text-brand-cyan text-2xl"></i> +91 96545 24339</div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form class="space-y-5 bg-[#030508]/80 p-6 rounded-2xl border border-white/10 shadow-2xl" onsubmit="bookDemoWA(event)">
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Full Name</label>
+                        <input type="text" id="wa-name" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-cyan transition-colors" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Phone Number</label>
+                        <input type="tel" id="wa-phone" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-cyan transition-colors" placeholder="+91 98765 43210">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Business Type</label>
+                        <select id="wa-type" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-cyan transition-colors appearance-none">
+                            <option value="" disabled selected>Select Industry</option>
+                            <option value="Real Estate">Real Estate</option>
+                            <option value="Healthcare">Healthcare / Clinic</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Message</label>
+                        <textarea id="wa-msg" rows="2" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-brand-cyan transition-colors" placeholder="I want to stop missing calls..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-4 rounded-xl bg-brand-cyan text-black font-bold text-lg hover:bg-white shadow-[0_0_20px_rgba(0,240,255,0.4)] flex justify-center items-center gap-2 transition-colors">
+                        <i class="ph-bold ph-paper-plane-tilt text-2xl"></i> Get Free Demo
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. TRUST + PROOF (Testimonials) -->
+    <section class="py-24 bg-black border-y border-white/5 relative z-10 overflow-hidden gs-reveal">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16"><h2 class="text-4xl font-bold text-white mb-4">Trusted by Market Leaders</h2></div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass p-8 rounded-3xl">
+                    <div class="flex text-brand-cyan mb-4"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-slate-300 italic mb-6">"AI TaskOrbit transformed our real estate lead qualification. Revenue is up 35% this month!"</p>
+                    <div class="flex items-center gap-4">
+                        <img src="https://i.pravatar.cc/100?img=33" class="w-12 h-12 rounded-full border-2 border-white/10">
+                        <div><h4 class="text-white font-bold">Rohan Sharma</h4><p class="text-xs text-slate-500">Director, Apex Realty</p></div>
+                    </div>
+                </div>
+                <div class="glass p-8 rounded-3xl">
+                    <div class="flex text-brand-cyan mb-4"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-slate-300 italic mb-6">"The front desk overload was causing staff burnout. The AI handles 80% of our bookings flawlessly."</p>
+                    <div class="flex items-center gap-4">
+                        <img src="https://i.pravatar.cc/100?img=47" class="w-12 h-12 rounded-full border-2 border-white/10">
+                        <div><h4 class="text-white font-bold">Dr. Ananya Desai</h4><p class="text-xs text-slate-500">CityCare Clinics</p></div>
+                    </div>
+                </div>
+                <div class="glass p-8 rounded-3xl">
+                    <div class="flex text-brand-cyan mb-4"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-slate-300 italic mb-6">"Scaling our admission process was tough until TaskOrbit. It answers student queries 24/7."</p>
+                    <div class="flex items-center gap-4">
+                        <img src="https://i.pravatar.cc/100?img=11" class="w-12 h-12 rounded-full border-2 border-white/10">
+                        <div><h4 class="text-white font-bold">Vikram Patel</h4><p class="text-xs text-slate-500">CEO, EduScale</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. CLEAN FOOTER -->
+    <footer class="pt-12 pb-8 bg-[#02050A] relative z-10 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <img src="https://i.ibb.co/8nD2ZTZm/Gemini-Generated-Image-4d2na04d2na04d2n-removebg-preview.png" class="w-8 h-8" alt="Logo">
+                <span class="text-xl font-bold text-white">AI TaskOrbit</span>
+            </div>
+            <div class="flex gap-8 text-sm font-medium text-slate-400">
+                <a href="mailto:taskorbitt@gmail.com" class="hover:text-brand-cyan transition flex items-center gap-2"><i class="ph-fill ph-envelope"></i> taskorbitt@gmail.com</a>
+                <a href="tel:+919654524339" class="hover:text-brand-cyan transition flex items-center gap-2"><i class="ph-fill ph-phone"></i> +91 96545 24339</a>
+            </div>
+            <p class="text-xs text-slate-600">&copy; 2026 AI TaskOrbit. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/919654524339" target="_blank" class="fixed bottom-6 right-6 bg-[#25D366] text-white p-4 rounded-full shadow-[0_0_20px_rgba(37,211,102,0.6)] hover:scale-110 transition-transform z-50 flex items-center justify-center group">
+        <i class="ph-fill ph-whatsapp-logo text-3xl"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script>
+        // 1. GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        const revealElements = document.querySelectorAll(".gs-reveal");
+        revealElements.forEach((elem) => {
+            gsap.fromTo(elem, 
+                { autoAlpha: 0, y: 50 }, 
+                { duration: 1, autoAlpha: 1, y: 0, ease: "power3.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+            );
+        });
+
+        // 2. 3D Tilt Effect on Feature Cards
+        const cards = document.querySelectorAll('.tilt-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+
+        // 3. Audio Player Logic
+        function toggleDemoAudio(btnElement) {
+            const audio = document.getElementById('main-demo-audio');
+            const icon = btnElement.querySelector('.demo-play-icon');
+            const waveContainer = document.querySelector('.demo-wave-container');
+
+            if (audio.paused) {
+                audio.play();
+                icon.classList.remove('ph-play');
+                icon.classList.add('ph-pause');
+                waveContainer.classList.add('playing');
+            } else {
+                audio.pause();
+                icon.classList.remove('ph-pause');
+                icon.classList.add('ph-play');
+                waveContainer.classList.remove('playing');
+            }
+
+            audio.onended = function() {
+                icon.classList.remove('ph-pause');
+                icon.classList.add('ph-play');
+                waveContainer.classList.remove('playing');
+            };
+        }
+
+        // 4. WhatsApp Lead Capture Form
+        function bookDemoWA(event) {
+            event.preventDefault();
+            const name = document.getElementById('wa-name').value;
+            const phone = document.getElementById('wa-phone').value;
+            const type = document.getElementById('wa-type').value;
+            const msg = document.getElementById('wa-msg').value;
+            const text = `Hi AI TaskOrbit team! 👋%0A%0A*New Lead from Website*%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Business Type:* ${type}%0A*Message:* ${msg}`;
+            window.open(`https://wa.me/919654524339?text=${text}`, '_blank');
+        }
+    </script>
+</body>
+</html>
